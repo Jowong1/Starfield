@@ -4,6 +4,7 @@ int onClick = 0;
 boolean expand = true;
 double fader = 0;
 double whiteColor = 10;
+//
 void setup()
 {
   size(800,800);
