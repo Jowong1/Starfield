@@ -1,9 +1,12 @@
 Particle[] particles;
+Particle spots;
 double rectSize = 0;
 int onClick = 0;
 boolean expand = true;
 double fader = 0;
 double whiteColor = 10;
+boolean magnify = false;
+float spread = 0.0;
 //
 void setup()
 {
@@ -11,18 +14,32 @@ void setup()
   background(0);
   noStroke();
   particles = new Particle[500];
-        for(int nI = 0; nI < particles.length; nI++){
-            particles[nI] = new NormalParticle();
-        }
+  for(int nI = 0; nI < particles.length; nI++){
+      particles[nI] = new NormalParticle();
+  }
+  spots = new OddBallParticle(width/2, height/2, -0.02, 30.0); // s => -0.1 is very cool too!
 }
-void mouseClicked(){
+//void mouseClicked(){
+//  onClick = onClick + 1;
+//  if(expand == true){
+//    expand = false;
+//  }else{
+//    expand = true;
+//  }
+//}
+void mousePressed(){
   onClick = onClick + 1;
+  magnify = true;
   if(expand == true){
     expand = false;
   }else{
     expand = true;
   }
 }
+void mouseReleased(){
+  magnify = false;
+}
+  
 void draw()
 {
   fill(0,0,0,(float)fader);
@@ -30,11 +47,14 @@ void draw()
   //rect(0,0,800,800);
   fill(0,0,0,100);
   //rect(0,0,800,800);
-  rect(mouseX-(float)rectSize/2,mouseY-(float)rectSize/2,(float)rectSize,(float)rectSize);
+  //rect(mouseX-(float)rectSize/2,mouseY-(float)rectSize/2,(float)rectSize,(float)rectSize);
+  ellipse(mouseX,mouseY,(float)rectSize,(float)rectSize);
   for(int i = 0; i < particles.length; i++){
     particles[i].move();
     particles[i].show();
   }
+  spots.move();
+  spots.show();
 }
 class NormalParticle implements Particle
 {
@@ -72,20 +92,23 @@ void move(){
     ellipse((float)myX, (float)myY, (float)mySize, (float)mySize);
     whiteColor = whiteColor + 0.0005;
     mySize = mySize + 0.1;
-    if(rectSize < 200 && onClick == 1){
+    if(magnify == true){
       rectSize = rectSize + 0.005;
-    }else if(rectSize < 400 && onClick == 2 && rectSize > 199){
-      rectSize = rectSize + 0.005;
-    }else if(rectSize < 600 && onClick == 3 && rectSize > 399){
-      rectSize = rectSize + 0.005;
-    }else if(rectSize < 2000 && onClick == 4 && rectSize > 599){
-      rectSize = rectSize + 0.005;
-    }else if(rectSize < 200 && onClick == 2){
-      onClick = 2;
-      if(expand == true){
-        rectSize = rectSize + 0.005;
-      }
     }
+    //if(rectSize < 200 && onClick == 1){
+    //  rectSize = rectSize + 0.005;
+    //}else if(rectSize < 400 && onClick == 2 && rectSize > 199){
+    //  rectSize = rectSize + 0.005;
+    //}else if(rectSize < 600 && onClick == 3 && rectSize > 399){
+    //  rectSize = rectSize + 0.005;
+    //}else if(rectSize < 2000 && onClick == 4 && rectSize > 599){
+    //  rectSize = rectSize + 0.005;
+    //}else if(rectSize < 200 && onClick == 2){
+    //  onClick = 2;
+    //  if(expand == true){
+    //    rectSize = rectSize + 0.005;
+    //  }
+    //}
   }
 }
 interface Particle
@@ -93,10 +116,34 @@ interface Particle
   public void show();
   public void move();
 }
-//class OddballParticle implements Particle //uses an interface
-//{
-  //your code here
-//}
+class OddBallParticle implements Particle //uses an interface
+{
+  float x, y, speed;
+    float angle = 0.0;
+    float dim;
+  OddBallParticle(float xpos, float ypos, float s, float d) {
+      x = xpos;
+      y = ypos;
+    speed = s;
+    dim = d;
+  }
+  void move() {
+    angle += speed;
+    speed = speed + 0.000001;
+  }
+  void show() {
+    noStroke();
+    pushMatrix();
+    translate(x, y);
+    angle += speed;
+    rotate(angle);
+    //fill(255);
+    ellipse((dim/2) + spread, spread, dim, dim);
+    ellipse((dim/2) + spread, spread, dim, dim);
+    spread = spread + 0.1;
+    popMatrix();
+  }
+}
 //class JumboParticle implements Particle //uses inheritance
 //{
   //your code here
