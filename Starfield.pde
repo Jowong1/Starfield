@@ -1,5 +1,6 @@
 Particle[] particles;
 Particle spots;
+Particle big;
 double rectSize = 0;
 int onClick = 0;
 boolean expand = true;
@@ -7,6 +8,7 @@ double fader = 0;
 double whiteColor = 10;
 boolean magnify = false;
 float spread = 0.0;
+float ellpShader = 0.0;
 //
 void setup()
 {
@@ -17,6 +19,7 @@ void setup()
   for(int nI = 0; nI < particles.length; nI++){
       particles[nI] = new NormalParticle();
   }
+  big = new JumboParticle();
   spots = new OddBallParticle(width/2, height/2, -0.02, 30.0); // s => -0.1 is very cool too!
 }
 //void mouseClicked(){
@@ -53,6 +56,8 @@ void draw()
     particles[i].move();
     particles[i].show();
   }
+  big.move();
+  big.show();
   spots.move();
   spots.show();
 }
@@ -74,8 +79,8 @@ class NormalParticle implements Particle
     myRotate = 10;
   }
 void move(){
-    myX = (Math.sin(myAngle)*mySpeed) + myX;
-    myY = (Math.cos(myAngle)*mySpeed) + myY;
+    myX = (Math.cos(myAngle)*mySpeed) + myX;
+    myY = (Math.sin(myAngle)*mySpeed) + myY;
     //spd = spd + 0.5;
     // out = out-0.0008;
     //if (rot > 0){
@@ -130,6 +135,7 @@ class OddBallParticle implements Particle //uses an interface
   void move() {
     angle += speed;
     speed = speed + 0.000001;
+    ellpShader = ellpShader + 0.05;
   }
   void show() {
     noStroke();
@@ -137,14 +143,17 @@ class OddBallParticle implements Particle //uses an interface
     translate(x, y);
     angle += speed;
     rotate(angle);
-    //fill(255);
+    fill((float)whiteColor, (float)whiteColor, (float)whiteColor, ellpShader);
     ellipse((dim/2) + spread, spread, dim, dim);
     ellipse((dim/2) + spread, spread, dim, dim);
     spread = spread + 0.1;
     popMatrix();
   }
 }
-//class JumboParticle implements Particle //uses inheritance
-//{
-  //your code here
-//}
+class JumboParticle extends NormalParticle //uses inheritance
+{
+  JumboParticle(){
+    mySize = 20;
+    mySpeed = 3;
+  }
+}
